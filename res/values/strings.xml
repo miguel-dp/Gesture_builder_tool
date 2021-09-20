@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">Rune Forge</string>
+    <string name="app_name">Gesture Builder</string>
+
+    <string name="addGesture_save">Save</string>
+    <string name="addGesture_clear">Clear</string>
+    <string name="addGesture_cancel">Cancel</string>
+    <string name="addGesture_checkGestureEmpty">You have not drawn a gesture</string>
+    <string name="addGesture_DialogTitle">Insert the name of the Gesture</string>
+    <string name="addGesture_checkGestureName">Insert a valid name</string>
+    <string name="addGesture_gestureSaved">Gesture saved as:</string>
+
+    <string name="gesturePanel_numberGestures">Number of gestures:</string>
+    <string name="gesturePanel_gestureDetected">Detected gesture:</string>
+    <string name="gesturePanel_createGesture">Create new Gesture</string>
+    <string name="gesturePanel_saveGesture">Save gesture</string>
 </resources>
