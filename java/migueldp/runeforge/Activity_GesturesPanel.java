@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ public class Activity_GesturesPanel extends Activity {
 
     // UI
     private TextView tv_counter_gestures;
+    private TextView tv_last_gesture;
     private Button b_insert;
     private Button b_clear;
     private GestureOverlayView gestureOverlay;
@@ -44,10 +46,13 @@ public class Activity_GesturesPanel extends Activity {
 
         gestureOverlay = findViewById(R.id.gestures);
         tv_counter_gestures = findViewById(R.id.tv_gesture_panel);
+        tv_last_gesture = findViewById(R.id.tv_last_gesture);
         b_insert = findViewById(R.id.b_new_gesture);
         b_clear = findViewById(R.id.b_clean_overlay);
+        ImageButton ib_help = findViewById(R.id.ib_help);
         ListView listView = findViewById(R.id.list_view);
 
+        ib_help.setOnClickListener(v -> dialog_showHelp());
         b_insert.setOnClickListener(this::init_create_gesture);
         b_clear.setOnClickListener(v -> gestureOverlay.clear(false));
 
@@ -85,9 +90,21 @@ public class Activity_GesturesPanel extends Activity {
         // predictions array is sorted by default, by score
         if (predictions.size() > 0 && predictions.get(0).score > 5.0) {
             String message = getResources().getString(R.string.gesturePanel_gestureDetected) + " " + predictions.get(0).name;
-            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            message = message + "\n" + getResources().getString(R.string.gesturePanel_gestureScore) + " " + predictions.get(0).score;
+
+            tv_last_gesture.setText(message);
         }
     };
+
+    public void dialog_showHelp() {
+        String message = getResources().getString(R.string.dialog_help_message).concat("\n").concat(getExternalFilesDir(null) + "/" + "gestures.txt");
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.help)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                .show();
+    }
 
     public void refresh_UI() {
         tv_counter_gestures.setText(R.string.gesturePanel_numberGestures);
