@@ -1,7 +1,6 @@
 package migueldp.runeforge;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
@@ -16,18 +15,27 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Activity_GesturesPanel extends Activity {
 
-    private GestureOverlayView gestureOverlay;
-    private GestureLibrary gestureLibrary;
-    private String[] gestures;
+    // primitive
     private String gestureName;
+    private ArrayList<String> gesturesArrayList;
+
+    // UI
     private TextView tv_counter_gestures;
     private Button b_insert;
     private Button b_clear;
+    private GestureOverlayView gestureOverlay;
+
+    // Libraries
+    private GestureLibrary gestureLibrary;
     private ArrayAdapter<String> arrayAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,107 +48,122 @@ public class Activity_GesturesPanel extends Activity {
         b_clear = findViewById(R.id.b_clean_overlay);
         ListView listView = findViewById(R.id.list_view);
 
+        b_insert.setOnClickListener(this::init_create_gesture);
+        b_clear.setOnClickListener(v -> gestureOverlay.clear(false));
+
         /*
          * IMPORTANT: the next line returns a object of FileGestureLibrary who is a son of GestureLibrary
          * that is why the methods load and save have code and they aren't abstract.
          */
         gestureLibrary = GestureLibraries.fromFile(getExternalFilesDir(null) + "/" + "gestures.txt");
         gestureLibrary.load();
-        gestures = gestureLibrary.getGestureEntries().toArray(new String[0]);
 
-        tv_counter_gestures.setText(R.string.gesturePanel_numberGestures);
-        tv_counter_gestures.append(" " + gestures.length);
-        b_insert.setOnClickListener(this::init_create_gesture);
-        b_clear.setOnClickListener(v -> gestureOverlay.clear(false));
+        String[] gesturesArray = gestureLibrary.getGestureEntries().toArray(new String[0]);
+        gesturesArrayList = new ArrayList<>();
+        gesturesArrayList.addAll(Arrays.asList(gesturesArray));
 
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.textView, gestures);
+        arrayAdapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.textView, gesturesArrayList);
         listView.setAdapter(arrayAdapter);
-
         listView.setOnItemClickListener((parent, view, position, id) -> read_gesture(position));
-
         listView.setOnItemLongClickListener((parent, view, position, id) -> {
-            delete_gesture(position);
+            dialog_confirmDelete(position);
             return true;
         });
 
+        refresh_UI();
+
         gestureOverlay.setGestureStrokeAngleThreshold(90.0f);
-        gestureOverlay.addOnGesturePerformedListener((overlay, gesture) -> {
-
-            ArrayList<Prediction> predictions = gestureLibrary.recognize(gesture);
-
-            // one prediction needed TODO: return the gesture with biggest score!!
-            if (predictions.size() > 0 && predictions.get(0).score > 2.0) {
-                String message = getResources().getString(R.string.gesturePanel_gestureDetected) + " " + predictions.get(0).name;
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
+        gestureOverlay.addOnGesturePerformedListener(onGesturePerformedListener);
 
     }
 
-    public void reload_UI() {
+    final GestureOverlayView.OnGesturePerformedListener onGesturePerformedListener = (overlay, gesture) -> {
+        ArrayList<Prediction> predictions = gestureLibrary.recognize(gesture);
+
+        // one prediction needed
+        // I guess score of 5 is the minimum of a good predict
+        // predictions array is sorted by default, by score
+        if (predictions.size() > 0 && predictions.get(0).score > 5.0) {
+            String message = getResources().getString(R.string.gesturePanel_gestureDetected) + " " + predictions.get(0).name;
+            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    public void refresh_UI() {
         tv_counter_gestures.setText(R.string.gesturePanel_numberGestures);
-        tv_counter_gestures.append(" " + gestures.length);
+        tv_counter_gestures.append(" " + gesturesArrayList.size());
+        arrayAdapter.notifyDataSetChanged();
+        gestureOverlay.clear(false);
     }
 
     public void read_gesture(int positionGesture) {
-        String gestureEntry = gestures[positionGesture];
+        String gestureEntry = gesturesArrayList.get(positionGesture);
         Gesture gesture = gestureLibrary.getGestures(gestureEntry).get(0);
         gestureOverlay.setGesture(gesture);
     }
 
-    public void delete_gesture(int positionGesture) {
-        Toast.makeText(getApplicationContext(), "Deleted: " + gestures[positionGesture], Toast.LENGTH_SHORT).show();
-        gestureLibrary.removeEntry(gestures[positionGesture]);
+    private void create_gesture(String gestureName, Gesture gesture) {
+        gestureLibrary.addGesture(gestureName, gesture);
         gestureLibrary.save();
-        gestures = gestureLibrary.getGestureEntries().toArray(new String[0]);
-        arrayAdapter.notifyDataSetChanged(); // TODO: not working
-        reload_UI();
+        gesturesArrayList.add(gestureName);
     }
 
-    private void create_gesture(String gestureName) {
+    public void delete_gesture(int positionGesture) {
+        gestureLibrary.removeEntry(gesturesArrayList.get(positionGesture));
+        gestureLibrary.save();
+        gesturesArrayList.remove(positionGesture);
+    }
+
+    private void dialog_confirmDelete(int positionGesture) {
+        new MaterialAlertDialogBuilder(this)
+                .setMessage(R.string.gesturePanel_confirmDelete)
+                .setNeutralButton(R.string.cancel, (dialog, which) -> dialog.cancel())
+                .setPositiveButton(R.string.accept, (dialog, which) ->
+                {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            getResources().getString(R.string.deleted) + ": " + gesturesArrayList.get(positionGesture),
+                            Toast.LENGTH_SHORT).show();
+                    delete_gesture(positionGesture);
+                    refresh_UI();
+                })
+                .show();
+    }
+
+    private void dialog_askNameGesture() {
         Gesture gesture = gestureOverlay.getGesture();
 
-        if (gesture == null || gesture.getStrokesCount() == 0) {
-            // Check if the gesture is empty
-            Toast.makeText(getApplicationContext(), R.string.addGesture_checkGestureEmpty, Toast.LENGTH_SHORT).show();
-        } else {
-            gestureLibrary.addGesture(gestureName, gesture);
-
-            Toast.makeText(this,
-                    getResources().getString(R.string.addGesture_gestureSaved).concat(" ").concat(gestureName),
-                    Toast.LENGTH_SHORT).show();
-            gestureLibrary.save();
-            gestures = gestureLibrary.getGestureEntries().toArray(new String[0]);
-            arrayAdapter.notifyDataSetChanged(); // TODO: not working
-            reload_UI();
+        if (gesture == null || gesture.getStrokesCount() == 0) { // Check if the gesture is empty
+            Toast.makeText(this, R.string.addGesture_checkGestureEmpty, Toast.LENGTH_SHORT).show();
+            return;
         }
-    }
 
-    private void getGestureName_AlertDialog() {
+        EditText editText = new EditText(this);
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.addGesture_DialogTitle)
+                .setView(editText)
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    dialog.cancel();
+                    gestureOverlay.clear(false);
+                })
+                .setPositiveButton(R.string.save, (dialog, which) ->
+                {
+                    String ToastMessage;
+                    gestureName = editText.getText().toString();
 
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle(R.string.addGesture_DialogTitle);
+                    // CONTROL OF ERRORS
+                    if (gestureName.equals("")) { // Check if the name of the gesture is empty
+                        ToastMessage = getResources().getString(R.string.addGesture_checkGestureName);
+                        dialog_askNameGesture();
+                    } else {
+                        create_gesture(gestureName, gesture);
+                        ToastMessage = getResources().getString(R.string.addGesture_gestureSaved).concat(" ").concat(gestureName);
+                        refresh_UI();
+                    }
 
-        final EditText editText = new EditText(this);
-        dialog.setView(editText);
-        dialog.setPositiveButton(R.string.addGesture_save, (dialogInterface, i) -> {
-            gestureName = editText.getText().toString();
-
-            // Check if the name of the gesture is empty
-            if (gestureName.equals("")) {
-                Toast.makeText(this, R.string.addGesture_checkGestureName, Toast.LENGTH_SHORT).show();
-                getGestureName_AlertDialog();
-            } else {
-                create_gesture(gestureName);
-            }
-
-            gestureOverlay.clear(false);
-        });
-        dialog.setNegativeButton(R.string.addGesture_cancel, (dialogInterface, i) -> {
-            dialogInterface.cancel();
-            gestureOverlay.clear(false);
-        });
-        dialog.show();
+                    Toast.makeText(getApplicationContext(), ToastMessage, Toast.LENGTH_SHORT).show();
+                })
+                .show();
     }
 
     public void init_create_gesture(View view) {
@@ -149,9 +172,8 @@ public class Activity_GesturesPanel extends Activity {
         gestureOverlay.setFadeEnabled(false);
         gestureOverlay.setFadeOffset(100000);
 
-        Button button = (Button) view;
-        button.setText(R.string.gesturePanel_saveGesture);
-        button.setOnClickListener(this::save_create_gesture);
+        b_insert.setText(R.string.gesturePanel_saveGesture);
+        b_insert.setOnClickListener(this::save_create_gesture);
 
         b_clear.setVisibility(View.VISIBLE);
     }
@@ -161,12 +183,10 @@ public class Activity_GesturesPanel extends Activity {
         gestureOverlay.setFadeEnabled(true);
         gestureOverlay.setFadeOffset(420); //default value
 
-        // Show dialog to ask gesture name
-        getGestureName_AlertDialog();
+        dialog_askNameGesture();
 
-        Button button = (Button) view;
-        button.setText(R.string.gesturePanel_createGesture);
-        button.setOnClickListener(this::init_create_gesture);
+        b_insert.setText(R.string.gesturePanel_createGesture);
+        b_insert.setOnClickListener(this::init_create_gesture);
 
         b_clear.setVisibility(View.GONE);
     }
