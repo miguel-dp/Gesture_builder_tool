@@ -1,12 +1,7 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.RuneForge" parent="Theme.MaterialComponents.DayNight">
+    <style name="Theme.RuneForge" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/black</item>
-
-    </style>
-
-    <style name="SplashTheme" parent="Theme.MaterialComponents.DayNight">
-        <item name="android:windowBackground">@drawable/splash_screen</item>
     </style>
 </resources>

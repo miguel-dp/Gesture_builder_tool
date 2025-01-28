@@ -1,6 +1,5 @@
 package migueldp.runeforge;
 
-import android.app.Activity;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
@@ -16,12 +15,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Activity_GesturesPanel extends Activity {
+public class Activity_GesturesPanel extends AppCompatActivity {
 
     // primitive
     private String gestureName;
