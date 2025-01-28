@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gestengenerator</string>
+    <string name="ok">OK</string>
+    <string name="accept">Akzeptieren</string>
+    <string name="cancel">Stornieren</string>
+    <string name="clear">Klar</string>
+    <string name="save">Speichern</string>
+    <string name="deleted">Gelöscht</string>
+    <string name="help">Helfen</string>
+    <string name="dialog_help_message">Sie finden die Datei mit den Gestendaten unter:</string>
+    <string name="addGesture_checkGestureEmpty">Du hast keine Geste gezeichnet</string>
+    <string name="addGesture_DialogTitle">Geben Sie den Namen der Geste ein</string>
+    <string name="addGesture_checkGestureName">Der Name darf nicht leer sein</string>
+    <string name="addGesture_gestureSaved">Geste gespeichert als:</string>
+    <string name="gesturePanel_numberGestures">Anzahl der Gesten:</string>
+    <string name="gesturePanel_gestureDetected">Erkannte Geste:</string>
+    <string name="gesturePanel_gestureScore">Punktzahl:</string>
+    <string name="gesturePanel_createGesture">Neue Geste erstellen</string>
+    <string name="gesturePanel_saveGesture">Geste speichern</string>
+    <string name="gesturePanel_confirmDelete">Löschen bestätigen. Sind Sie sicher?</string>
+</resources>

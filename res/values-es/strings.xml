@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Creador de Gestos</string>
+    <string name="ok">Vale</string>
+    <string name="accept">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="cancel">C</string>
+    <string name="clear">Limpiar</string>
+    <string name="save">Guardar</string>
+    <string name="deleted">Borrado</string>
+    <string name="help">Ayuda</string>
+    <string name="dialog_help_message">Puedes encontrar el archivo con los gestor en:</string>
+    <string name="addGesture_checkGestureEmpty">No has dibujado un gesto</string>
+    <string name="addGesture_DialogTitle">Inserta el nombre del gesto</string>
+    <string name="addGesture_DialogTitle">I</string>
+    <string name="addGesture_checkGestureName">El nombre no puede estar vacío</string>
+    <string name="addGesture_gestureSaved">Gesto guardado como:</string>
+    <string name="gesturePanel_numberGestures">Número de gestos:</string>
+    <string name="gesturePanel_gestureDetected">Gesto detectado:</string>
+    <string name="gesturePanel_gestureScore">Precisión:</string>
+    <string name="gesturePanel_createGesture">Crear nuevo gesto</string>
+    <string name="gesturePanel_createGesture">C</string>
+    <string name="gesturePanel_saveGesture">Guardar gesto</string>
+    <string name="gesturePanel_confirmDelete">Confirmar borrado. ¿Estás seguro?</string>
+</resources>

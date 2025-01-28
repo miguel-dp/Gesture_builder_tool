@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Конструктор жестов</string>
+    <string name="ok">Хорошо</string>
+    <string name="accept">Принять</string>
+    <string name="cancel">Отмена</string>
+    <string name="clear">Прозрачный</string>
+    <string name="save">Сохранять</string>
+    <string name="deleted">Удалено</string>
+    <string name="help">Помощь</string>
+    <string name="dialog_help_message">Файл с данными жестов можно найти здесь:</string>
+    <string name="addGesture_checkGestureEmpty">Вы не нарисовали жест</string>
+    <string name="addGesture_DialogTitle">Введите название жеста</string>
+    <string name="addGesture_checkGestureName">Имя не может быть пустым</string>
+    <string name="addGesture_gestureSaved">Жест сохранен как:</string>
+    <string name="gesturePanel_numberGestures">Количество жестов:</string>
+    <string name="gesturePanel_gestureDetected">Обнаруженный жест:</string>
+    <string name="gesturePanel_gestureScore">Счет:</string>
+    <string name="gesturePanel_createGesture">Создать новый жест</string>
+    <string name="gesturePanel_saveGesture">Сохранить жест</string>
+    <string name="gesturePanel_confirmDelete">Подтвердите удаление. Вы уверены?</string>
+</resources>
